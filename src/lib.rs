@@ -52,7 +52,7 @@ impl<T> FmtEvent<T> {
         }
     }
 
-    pub fn without_time<T2>(self) -> FmtEvent<()> {
+    pub fn without_time(self) -> FmtEvent<()> {
         FmtEvent {
             timer: (),
             spans: self.spans,
@@ -128,12 +128,15 @@ where
 
         let mut time = String::new();
         self.timer.format_time(&mut time)?;
+        if !time.is_empty() {
+            time.push(' ');
+        }
 
         let indentation = make_indentation(spans.len() * 2);
         let mut writer = IndentWriter::new(&indentation, &mut writer);
         write!(
             writer,
-            "{} {} {}::{}",
+            "{} {}{}::{}",
             FmtLevel(*metadata.level()),
             time,
             BOLD.paint(metadata.target()),
